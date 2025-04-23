@@ -37,11 +37,13 @@ public class TaskService {
         return newTask;
     }
 
-    public Task updateTask(String id, Task newTask) throws TaskNotFoundException {
-        Task oldTask = repo.findById(id).orElseThrow(()->new TaskNotFoundException("Task with ID: " + id + " not found."));
-        return repo.save(oldTask.withTitle(newTask.title())
-                .withStatus(newTask.status())
-                .withDescription(newTask.description()));
+    public Task updateTask(Task newTask) throws TaskNotFoundException {
+        if(repo.existsById(newTask.id())){
+            repo.save(newTask);
+            return newTask;
+        }else{
+            throw new TaskNotFoundException("Task with ID: " + newTask.id() + " not found.");
+        }
        }
 
     public void deleteTask(String id) throws TaskNotFoundException {
