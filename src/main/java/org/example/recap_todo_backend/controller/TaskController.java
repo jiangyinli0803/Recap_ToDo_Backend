@@ -39,7 +39,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable String id) throws TaskNotFoundException {
-         service.deleteTask(id);
+    public Task deleteTask(@PathVariable String id) throws TaskNotFoundException {
+         return service.deleteTask(id);
     }
 }

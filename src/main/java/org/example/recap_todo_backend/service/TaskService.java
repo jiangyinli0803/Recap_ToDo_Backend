@@ -45,10 +45,13 @@ public class TaskService {
         }
        }
 
-    public void deleteTask(String id) throws TaskNotFoundException {
+    public Task deleteTask(String id) throws TaskNotFoundException {
        if(!repo.existsById(id)) {
            throw new TaskNotFoundException("Task with ID: " + id + " not found.");
+       }else{
+           Task deletedTask = repo.findById(id).get();
+           repo.deleteById(id);
+           return deletedTask;
        }
-       repo.deleteById(id);
     }
 }

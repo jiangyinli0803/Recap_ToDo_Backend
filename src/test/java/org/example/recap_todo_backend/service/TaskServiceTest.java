@@ -96,13 +96,14 @@ class TaskServiceTest {
     void deleteTask_shouldCallDeleteById_whenCalled() throws TaskNotFoundException {
         //Given
         TaskService taskService = new TaskService(mockRepo, mockId);
-        //Task task1 = new Task("001", "Aufgabe1", Status.NotStarted, "Test to add task");
-        //Mockito.when(mockId.randomId()).thenReturn("001");
+        Task expected = new Task("001", "Aufgabe1", Status.OPEN);
         Mockito.when(mockRepo.existsById("001")).thenReturn(true);
+        Mockito.when(mockRepo.findById("001")).thenReturn(Optional.of(expected));
 
         //When
-        taskService.deleteTask("001");
+        Task actual = taskService.deleteTask("001");
         //then
+        assertEquals(expected, actual);
         Mockito.verify(mockRepo).deleteById("001");
     }
 }
