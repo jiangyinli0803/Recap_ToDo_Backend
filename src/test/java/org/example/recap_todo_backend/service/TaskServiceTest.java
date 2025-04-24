@@ -21,7 +21,7 @@ class TaskServiceTest {
     void getAllTasks_shouldReturnAllTasks_whenCalled() {
         //Given
         TaskService taskService = new TaskService(mockRepo, mockId);
-        Task task1 = new Task("001", "Aufgabe1", Status.InProgress, "Test");
+        Task task1 = new Task("001", "Aufgabe1", Status.OPEN);
         List<Task> expected = List.of(task1);
         Mockito.when(mockId.randomId()).thenReturn("1");
         Mockito.when(mockRepo.findAll()).thenReturn(expected);
@@ -36,7 +36,7 @@ class TaskServiceTest {
     void getTaskById_shouldReturnTask_whenCalledWithId() throws TaskNotFoundException {
         //Given
         TaskService taskService = new TaskService(mockRepo, mockId);
-        Task expected = new Task("001", "Aufgabe1", Status.InProgress, "Test");
+        Task expected = new Task("001", "Aufgabe1", Status.OPEN);
         Mockito.when(mockRepo.findById("001")).thenReturn(Optional.of(expected));
 
         //When
@@ -50,9 +50,9 @@ class TaskServiceTest {
     void addTask_shouldReturnTask_whenCalledWithDto(){
         //Given
         TaskService taskService = new TaskService(mockRepo, mockId);
-        Task expected = new Task("001", "Aufgabe1", Status.NotStarted, "Test to add task");
+        Task expected = new Task("001", "Aufgabe1", Status.OPEN);
         Mockito.when(mockId.randomId()).thenReturn("001");
-        TaskDto taskDto = new TaskDto("Aufgabe1", Status.NotStarted, "Test to add task");
+        TaskDto taskDto = new TaskDto("Test to add task", Status.OPEN);
         //When
         Task actual = taskService.addTask(taskDto);
         //then
@@ -63,7 +63,7 @@ class TaskServiceTest {
     void updateTask() throws TaskNotFoundException {
         //Given
         TaskService taskService = new TaskService(mockRepo, mockId);
-        Task newTask = new Task("001", "Aufgabe1", Status.NotStarted, "Test to add task");
+        Task newTask = new Task("001", "Aufgabe1", Status.OPEN);
 
         Mockito.when(mockRepo.existsById("001")).thenReturn(true);
         //When
@@ -77,7 +77,7 @@ class TaskServiceTest {
     void updateTask_shouldThrowException_whenCalledWithInvalidId() throws TaskNotFoundException {
         //Given
         TaskService taskService = new TaskService(mockRepo, mockId);
-        Task newTask = new Task("001", "Aufgabe1", Status.NotStarted, "Test to add task");
+        Task newTask = new Task("001", "Aufgabe1", Status.OPEN);
 
         Mockito.when(mockRepo.existsById("001")).thenReturn(false);
         //When

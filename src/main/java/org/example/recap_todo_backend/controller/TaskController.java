@@ -14,8 +14,8 @@ public class TaskController {
 
     private final TaskService service;
 
-    public TaskController(TaskService taskService) {
-        this.service = taskService;
+    public TaskController(TaskService service) {
+        this.service = service;
     }
 
     @GetMapping
@@ -34,8 +34,8 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public Task updateTask(@PathVariable String id, @RequestBody Task newtTask) throws TaskNotFoundException {
-        return service.updateTask(id, newtTask);
+    public Task updateTask(@RequestBody Task newtTask) throws TaskNotFoundException {
+        return service.updateTask(newtTask);
     }
 
     @DeleteMapping("/{id}")

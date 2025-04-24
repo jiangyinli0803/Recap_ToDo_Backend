@@ -29,9 +29,8 @@ public class TaskService {
     public Task addTask(TaskDto taskDto) {
         Task newTask = new Task(
                 idService.randomId(),
-                taskDto.title(),
-                taskDto.status(),
-                taskDto.description()
+                taskDto.description(),
+                taskDto.status()
         );
         repo.save(newTask);
         return newTask;
