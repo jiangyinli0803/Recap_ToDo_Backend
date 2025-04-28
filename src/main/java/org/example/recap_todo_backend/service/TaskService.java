@@ -18,8 +18,12 @@ public class TaskService {
         this.idService = idService;
     }
 
-    public List<Task> getAllTasks() {
-        return repo.findAll();
+    public List<Task> getAllTasks() throws TaskNotFoundException {
+        List<Task> tasks = repo.findAll();
+        if (tasks.isEmpty()) {
+            throw new TaskNotFoundException("Task not found");
+        }
+        return tasks;
     }
 
     public Task getTaskById(String id) throws TaskNotFoundException {

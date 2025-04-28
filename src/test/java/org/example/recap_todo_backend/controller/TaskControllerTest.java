@@ -1,15 +1,22 @@
 package org.example.recap_todo_backend.controller;
 
 import org.example.recap_todo_backend.Repository.TaskRepository;
+import org.example.recap_todo_backend.exceptions.TaskNotFoundException;
 import org.example.recap_todo_backend.model.Status;
 import org.example.recap_todo_backend.model.Task;
+import org.example.recap_todo_backend.service.TaskService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -24,10 +31,18 @@ class TaskControllerTest {
     private TaskRepository repo;
 
     @Test
+    void getAllTasks_shouldReturnErrorMessage() throws Exception {
+
+        mockMvc.perform(get("/api/todo"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Task not found"));
+    }
+
+    @Test
     void getAllTasks_shouldReturnAllTasks() throws Exception {
         //given
-        Task task = new Task("001", "Aufgabe1", Status.OPEN);
-        repo.save(task);
+        Task task1 = new Task("001", "Aufgabe1", Status.OPEN);
+        repo.save(task1);
         //when
         //then
         mockMvc.perform(get("/api/todo"))
@@ -49,6 +64,7 @@ class TaskControllerTest {
       repo.save(task);
       mockMvc.perform(get("/api/todo/001"))
               .andExpect(status().isOk())
+              .andExpect(content().contentType(MediaType.APPLICATION_JSON))
               .andExpect(content().json("""
             {
                 "id": "001",
@@ -123,4 +139,6 @@ class TaskControllerTest {
                         }
                         """));
     }
+
+
 }

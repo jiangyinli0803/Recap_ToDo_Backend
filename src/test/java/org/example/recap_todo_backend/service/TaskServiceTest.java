@@ -18,7 +18,7 @@ class TaskServiceTest {
     IdService mockId = Mockito.mock(IdService.class);
 
     @Test
-    void getAllTasks_shouldReturnAllTasks_whenCalled() {
+    void getAllTasks_shouldReturnAllTasks_whenCalled() throws TaskNotFoundException {
         //Given
         TaskService taskService = new TaskService(mockRepo, mockId);
         Task task1 = new Task("001", "Aufgabe1", Status.OPEN);
@@ -27,7 +27,7 @@ class TaskServiceTest {
         Mockito.when(mockRepo.findAll()).thenReturn(expected);
 
         //When
-        List<Task> actual = taskService.getAllTasks();
+        List<Task> actual = (List<Task>) taskService.getAllTasks();
         //then
         assertEquals(expected, actual);
     }
