@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,10 +14,12 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleTaskNotFoundException(TaskNotFoundException e) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Not Found");
-        error.put("message", e.getMessage());
+    public ResponseEntity<ErrorMessage> handleTaskNotFoundException(TaskNotFoundException e) {
+       ErrorMessage error = new ErrorMessage(
+               e.getMessage(),
+               LocalDateTime.now(),
+               HttpStatus.NOT_FOUND.value()
+       );
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }
