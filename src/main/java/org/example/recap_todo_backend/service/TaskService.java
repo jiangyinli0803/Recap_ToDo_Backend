@@ -34,7 +34,7 @@ public class TaskService {
 
     public Task addTask(TaskDto taskDto) {
         String correctedDescription = chatGPTService.spellingCheck(taskDto.description());
-        ;
+
         Task newTask = new Task(
                 idService.randomId(),
                 correctedDescription,
@@ -46,8 +46,11 @@ public class TaskService {
 
     public Task updateTask(Task newTask) throws TaskNotFoundException {
         if(repo.existsById(newTask.id())){
-            repo.save(newTask);
-            return newTask;
+            Task correctedTask = new Task(newTask.id(),
+                    chatGPTService.spellingCheck(newTask.description()),
+                    newTask.status());
+            repo.save(correctedTask);
+            return correctedTask;
         }else{
             throw new TaskNotFoundException("Task with ID: " + newTask.id() + " not found.");
         }
