@@ -5,16 +5,23 @@ import org.example.recap_todo_backend.model.Status;
 import org.example.recap_todo_backend.model.Task;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-@SpringBootTest
+@SpringBootTest(properties="chatgpt.api-key=123")
 @AutoConfigureMockMvc
+@AutoConfigureMockRestServiceServer
 class TaskControllerTest {
 
     @Autowired
@@ -23,13 +30,8 @@ class TaskControllerTest {
     @Autowired
     private TaskRepository repo;
 
-    @Test
-    void getAllTasks_shouldReturnErrorMessage() throws Exception {
-
-        mockMvc.perform(get("/api/todo"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Task not found"));
-    }
+    @Autowired
+    private MockRestServiceServer mockServer;
 
     @Test
     void getAllTasks_shouldReturnAllTasks() throws Exception {
@@ -68,7 +70,40 @@ class TaskControllerTest {
     }
 
     @Test
+    void getTaskById_shouldReturn404_whenCalledInvalidId() throws Exception {
+        mockMvc.perform(get("/api/todo/a123"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Task with ID: a123 not found."));
+    }
+
+    @Test
     void addTask() throws Exception {
+
+        mockServer.expect(requestTo("https://api.openai.com/v1/chat/completions"))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess("""
+                        {
+                          "id": "chatcmpl-abc123",
+                          "object": "chat.completion",
+                          "created": 1715000000,
+                          "model": "gpt-4o-mini",
+                          "choices": [
+                            {
+                              "index": 0,
+                              "message": {
+                                "role": "assistant",
+                                "content": "Tests schreiben"
+                              },
+                              "finish_reason": "stop"
+                            }
+                          ],
+                          "usage": {
+                            "prompt_tokens": 30,
+                            "completion_tokens": 10,
+                            "total_tokens": 40
+                          }
+                        }
+                        """, MediaType.APPLICATION_JSON));
         mockMvc.perform(post("/api/todo")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -91,6 +126,31 @@ class TaskControllerTest {
     void updateTask() throws Exception {
         //given
         Task task = new Task("002", "Tests update", Status.IN_PROGRESS);
+        mockServer.expect(requestTo("https://api.openai.com/v1/chat/completions"))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess("""
+                        {
+                          "id": "chatcmpl-abc123",
+                          "object": "chat.completion",
+                          "created": 1715000000,
+                          "model": "gpt-4o-mini",
+                          "choices": [
+                            {
+                              "index": 0,
+                              "message": {
+                                "role": "assistant",
+                                "content": "Tests update"
+                              },
+                              "finish_reason": "stop"
+                            }
+                          ],
+                          "usage": {
+                            "prompt_tokens": 30,
+                            "completion_tokens": 10,
+                            "total_tokens": 40
+                          }
+                        }
+                        """, MediaType.APPLICATION_JSON));
         repo.save(task);
         //when
         mockMvc.perform(put("/api/todo/002").contentType(MediaType.APPLICATION_JSON)

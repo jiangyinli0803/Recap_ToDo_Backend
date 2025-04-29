@@ -13,10 +13,9 @@ public class ChatGPTService {
     private final RestClient restClient;
 
     public ChatGPTService(RestClient.Builder restClientBuilder,
-                          @Value("${ChatGPT_API_KEY}") String apiKey,
-                          @Value("${ChatGPT_API_URL}") String baseUrl) {
+                          @Value("${chatgpt.api-key}") String apiKey) {
         this.restClient = restClientBuilder
-                .baseUrl(baseUrl)
+                .baseUrl("https://api.openai.com/v1/chat/completions")
                 .defaultHeader("Authorization", "Bearer " + apiKey)
                 .build();
     }
@@ -27,6 +26,7 @@ public class ChatGPTService {
                 .body(new ChatGPTRequest("Correct the spelling error in the todo description and return the corrected: " + taskDescription))
                 .retrieve()
                 .body(ChatGPTResponse.class);
+        assert response != null;
         return response.text();
     }
 }
