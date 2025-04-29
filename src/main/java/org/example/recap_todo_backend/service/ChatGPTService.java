@@ -10,11 +10,13 @@ import org.springframework.web.client.RestClient;
 @Service
 public class ChatGPTService {
 
-    private RestClient restClient;
+    private final RestClient restClient;
 
-    public ChatGPTService(RestClient.Builder restClientBuilder, @Value("${ChatGPT_API_KEY}") String apiKey) {
+    public ChatGPTService(RestClient.Builder restClientBuilder,
+                          @Value("${ChatGPT_API_KEY}") String apiKey,
+                          @Value("${ChatGPT_API_URL}") String baseUrl) {
         this.restClient = restClientBuilder
-                .baseUrl("https://api.openai.com/v1/chat/completions")
+                .baseUrl(baseUrl)
                 .defaultHeader("Authorization", "Bearer " + apiKey)
                 .build();
     }
