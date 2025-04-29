@@ -13,9 +13,11 @@ public class TaskService {
 
     private final TaskRepository repo;
     private final IdService idService;
-    public TaskService(TaskRepository repo, IdService idService) {
+    private final ChatGPTService chatGPTService;
+    public TaskService(TaskRepository repo, IdService idService, ChatGPTService chatGPTService) {
         this.repo = repo;
         this.idService = idService;
+        this.chatGPTService = chatGPTService;
     }
 
     public List<Task> getAllTasks() throws TaskNotFoundException {
@@ -31,9 +33,11 @@ public class TaskService {
     }
 
     public Task addTask(TaskDto taskDto) {
+        String correctedDescription = chatGPTService.spellingCheck(taskDto.description());
+        ;
         Task newTask = new Task(
                 idService.randomId(),
-                taskDto.description(),
+                correctedDescription,
                 taskDto.status()
         );
         repo.save(newTask);

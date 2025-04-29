@@ -16,18 +16,19 @@ import static org.junit.jupiter.api.Assertions.*;
 class TaskServiceTest {
     TaskRepository mockRepo = Mockito.mock(TaskRepository.class);
     IdService mockId = Mockito.mock(IdService.class);
+    ChatGPTService mockChat = Mockito.mock(ChatGPTService.class);
 
     @Test
     void getAllTasks_shouldReturnAllTasks_whenCalled() throws TaskNotFoundException {
         //Given
-        TaskService taskService = new TaskService(mockRepo, mockId);
+        TaskService taskService = new TaskService(mockRepo, mockId, mockChat);
         Task task1 = new Task("001", "Aufgabe1", Status.OPEN);
         List<Task> expected = List.of(task1);
         Mockito.when(mockId.randomId()).thenReturn("1");
         Mockito.when(mockRepo.findAll()).thenReturn(expected);
 
         //When
-        List<Task> actual = (List<Task>) taskService.getAllTasks();
+        List<Task> actual =  taskService.getAllTasks();
         //then
         assertEquals(expected, actual);
     }
@@ -35,7 +36,7 @@ class TaskServiceTest {
     @Test
     void getTaskById_shouldReturnTask_whenCalledWithId() throws TaskNotFoundException {
         //Given
-        TaskService taskService = new TaskService(mockRepo, mockId);
+        TaskService taskService = new TaskService(mockRepo, mockId, mockChat);
         Task expected = new Task("001", "Aufgabe1", Status.OPEN);
         Mockito.when(mockRepo.findById("001")).thenReturn(Optional.of(expected));
 
@@ -49,7 +50,7 @@ class TaskServiceTest {
     @Test
     void addTask_shouldReturnTask_whenCalledWithDto(){
         //Given
-        TaskService taskService = new TaskService(mockRepo, mockId);
+        TaskService taskService = new TaskService(mockRepo, mockId, mockChat);
         Task expected = new Task("001", "Aufgabe1", Status.OPEN);
         Mockito.when(mockId.randomId()).thenReturn("001");
         TaskDto taskDto = new TaskDto("Test to add task", Status.OPEN);
@@ -62,7 +63,7 @@ class TaskServiceTest {
     @Test
     void updateTask() throws TaskNotFoundException {
         //Given
-        TaskService taskService = new TaskService(mockRepo, mockId);
+        TaskService taskService = new TaskService(mockRepo, mockId, mockChat);
         Task newTask = new Task("001", "Aufgabe1", Status.OPEN);
 
         Mockito.when(mockRepo.existsById("001")).thenReturn(true);
@@ -74,9 +75,9 @@ class TaskServiceTest {
     }
 
     @Test
-    void updateTask_shouldThrowException_whenCalledWithInvalidId() throws TaskNotFoundException {
+    void updateTask_shouldThrowException_whenCalledWithInvalidId(){
         //Given
-        TaskService taskService = new TaskService(mockRepo, mockId);
+        TaskService taskService = new TaskService(mockRepo, mockId, mockChat);
         Task newTask = new Task("001", "Aufgabe1", Status.OPEN);
 
         Mockito.when(mockRepo.existsById("001")).thenReturn(false);
@@ -95,7 +96,7 @@ class TaskServiceTest {
     @Test
     void deleteTask_shouldCallDeleteById_whenCalled() throws TaskNotFoundException {
         //Given
-        TaskService taskService = new TaskService(mockRepo, mockId);
+        TaskService taskService = new TaskService(mockRepo, mockId, mockChat);
         Task expected = new Task("001", "Aufgabe1", Status.OPEN);
         Mockito.when(mockRepo.existsById("001")).thenReturn(true);
         Mockito.when(mockRepo.findById("001")).thenReturn(Optional.of(expected));
