@@ -1,22 +1,15 @@
 package org.example.recap_todo_backend.controller;
 
 import org.example.recap_todo_backend.Repository.TaskRepository;
-import org.example.recap_todo_backend.exceptions.TaskNotFoundException;
 import org.example.recap_todo_backend.model.Status;
 import org.example.recap_todo_backend.model.Task;
-import org.example.recap_todo_backend.service.TaskService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
-import java.util.List;
-
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
