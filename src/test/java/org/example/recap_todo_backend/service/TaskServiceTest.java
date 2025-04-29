@@ -51,9 +51,12 @@ class TaskServiceTest {
     void addTask_shouldReturnTask_whenCalledWithDto(){
         //Given
         TaskService taskService = new TaskService(mockRepo, mockId, mockChat);
-        Task expected = new Task("001", "Aufgabe1", Status.OPEN);
+        Task oldTask = new Task("001", "Aufgabe1", Status.OPEN);
         Mockito.when(mockId.randomId()).thenReturn("001");
+
         TaskDto taskDto = new TaskDto("Test to add task", Status.OPEN);
+        Mockito.when(mockChat.spellingCheck(taskDto.description())).thenReturn("Test to add task");
+        Task expected = new Task("001", "Test to add task", Status.OPEN);
         //When
         Task actual = taskService.addTask(taskDto);
         //then
@@ -67,6 +70,7 @@ class TaskServiceTest {
         Task newTask = new Task("001", "Aufgabe1", Status.OPEN);
 
         Mockito.when(mockRepo.existsById("001")).thenReturn(true);
+        Mockito.when(mockChat.spellingCheck(newTask.description())).thenReturn("Aufgabe1");
         //When
         Task actual = taskService.updateTask(newTask);
         //then
