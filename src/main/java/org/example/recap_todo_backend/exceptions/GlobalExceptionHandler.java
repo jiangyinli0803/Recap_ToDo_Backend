@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleTaskNotFoundException(TaskNotFoundException e) {
-       ErrorMessage error = new ErrorMessage(
-               e.getMessage(),
-               LocalDateTime.now(),
-               HttpStatus.NOT_FOUND.value()
-       );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    public String handleTaskNotFoundException(TaskNotFoundException e) {
+       return e.getMessage();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 }
